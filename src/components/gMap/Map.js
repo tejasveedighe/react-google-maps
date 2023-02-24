@@ -20,20 +20,8 @@ const Map = (props) => {
 
 	let centerPathLat = props.paths[0][0].lat;
 	let centerpathLng = props.paths[0][0].lng;
-	let [i, setI] = useState(1);
-	const [progress, setProgress] = useState([
-		{ lat: centerPathLat, lng: centerpathLng },
-	]);
-	const options = { strokeColor: "orange" };
 
-	const handleClick = () => {
-		if (i === props.paths.length) {
-			setI(0);
-			setProgress([]);
-		}
-		setProgress([...progress, props.paths[i]]);
-		setI(i + 1);
-	};
+	const options = { strokeColor: "orange" };
 
 	return (
 		<Card variant="outlined">
@@ -42,9 +30,11 @@ const Map = (props) => {
 					defaultZoom={17}
 					defaultCenter={{ lat: centerPathLat, lng: centerpathLng }}
 				>
-					{/* {props.paths.map((path) => { */}
-					<Poly path={props.paths[0]} options={options} icon={icon1} />
-					{/* })} */}
+					{props.paths.map((path, index) => {
+						return (
+							<Poly path={path} index={index} options={options} icon={icon1} />
+						);
+					})}
 				</GoogleMap>
 			</div>
 		</Card>
@@ -52,14 +42,7 @@ const Map = (props) => {
 };
 
 const Poly = (props) => {
-	const lat = props.path[0].lat;
-	const lng = props.path[0].lng;
-	const [progress, setProgress] = useState([
-		{
-			lat: lat,
-			lng: lng,
-		},
-	]);
+	const [progress, setProgress] = useState([props.path[0]]);
 	const [i, setI] = useState(1);
 	const polyRef = useRef();
 	const handleClick = () => {
@@ -71,14 +54,13 @@ const Poly = (props) => {
 		setProgress([...progress, props.path[i]]);
 		setI(i + 1);
 	};
-	console.log(polyRef);
 	return (
 		<>
 			<Polyline path={progress} options={props.options} ref={polyRef} />
 			<Marker icon={props.icon1} position={progress[progress.length - 1]} />
 			<div className="btn">
 				<Button variant="container" onClick={handleClick}>
-					Move
+					Move {props.index}
 				</Button>
 			</div>
 		</>
